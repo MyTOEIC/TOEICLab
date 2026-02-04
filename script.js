@@ -1,5 +1,6 @@
-﻿let currentSkill = 'tu-vung'; 
+let currentSkill = 'tu-vung'; 
 
+// Hàm chuyển Tab (Giữ nguyên logic cũ)
 function openTab(skillName) {
     document.querySelectorAll('.content').forEach(div => div.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
@@ -11,27 +12,45 @@ function openTab(skillName) {
     loadLessonData();
 }
 
-async function loadLessonData() {
+// --- HÀM NẠP DỮ LIỆU MỚI (KHÔNG DÙNG FETCH) ---
+function loadLessonData() {
     const lessonID = document.getElementById('lesson-selector').value;
-    const folderPath = `data/${currentSkill}/bai-${lessonID}`;
-    const jsonPath = `${folderPath}/data.json`;
-
-    try {
-        const response = await fetch(jsonPath);
-        if (!response.ok) throw new Error();
-        const data = await response.json();
+    // Đổi đường dẫn thành file .js
+    const jsPath = `data/${currentSkill}/bai-${lessonID}/data.js`; 
+    
+    // Tạo thẻ <script> để nạp file dữ liệu
+    const script = document.createElement('script');
+    script.src = jsPath;
+    
+    // Khi nạp xong file data.js
+    script.onload = function() {
+        console.log("Đã tải xong data: " + jsPath);
         
+        // Lấy dữ liệu từ biến toàn cục window.lessonData
+        const data = window.lessonData; 
+        const folderPath = `data/${currentSkill}/bai-${lessonID}`; // Đường dẫn để lấy ảnh/audio
+
         if (currentSkill === 'tu-vung') renderVocab(data);
         if (currentSkill === 'nghe') renderListening(data, folderPath);
         if (currentSkill === 'noi') renderSpeaking(data, folderPath);
         if (currentSkill === 'viet') renderWriting(data);
         if (currentSkill === 'doc') renderReading(data);
-    } catch (e) {
-        console.log("Chưa có dữ liệu bài này: " + jsonPath);
-        // Reset giao diện nếu lỗi
+
+        // Dọn dẹp thẻ script sau khi dùng xong
+        document.head.removeChild(script);
+    };
+
+    // Xử lý khi không tìm thấy file
+    script.onerror = function() {
+        alert("Chưa có dữ liệu cho bài này hoặc đường dẫn sai!");
         if(currentSkill === 'tu-vung') document.getElementById('vocab-topic').textContent = "Chưa có dữ liệu";
-    }
+    };
+
+    // Gắn thẻ script vào web để chạy
+    document.head.appendChild(script);
 }
+
+// --- CÁC HÀM HIỂN THỊ (RENDER) - GIỮ NGUYÊN ---
 
 function renderVocab(data) {
     document.getElementById('vocab-topic').textContent = data.title;
@@ -62,7 +81,7 @@ function toggleTranscript() {
 function renderSpeaking(data, path) {
     document.getElementById('speak-img').src = `${path}/${data.image}`;
     document.getElementById('speak-sample').src = `${path}/${data.audio}`;
-    setupRecorder();
+    // setupRecorder(); // Bỏ qua nếu chưa cần gấp
 }
 
 function renderWriting(data) {
@@ -86,11 +105,6 @@ function checkReadingResult() {
     if (!sel) return alert("Chọn đáp án đi!");
     res.innerHTML = parseInt(sel.value) == document.getElementById('read-quiz').dataset.ans ? 
         "<b style='color:green'>Chính xác!</b>" : "<b style='color:red'>Sai rồi!</b>";
-}
-
-function setupRecorder() {
-    // Giữ nguyên logic ghi âm ở phiên bản trước
-    // (Nếu cần code ghi âm chi tiết tôi sẽ gửi lại, nhưng code cũ vẫn chạy tốt)
 }
 
 window.onload = () => { openTab('vocab'); };
