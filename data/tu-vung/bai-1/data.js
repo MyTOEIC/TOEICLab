@@ -3,9 +3,9 @@
   "content": "In a modern <b>office</b>, employees often use <b>copiers</b> and <b>fax machines</b>. The <b>manager</b> is responsible for supervising the team.",
   "items": [
     { "en": "Abide by", "type": "(ph.v)", "vi": "tuân theo", "pron": "əˈbaɪd baɪ" },
-    { "en": "Agreement, "type": "(n)", "vi": "sự đồng ý, hợp đồng", "pron": "əˈɡriːmənt" },
-    { "en": "Assurance, "type": "(n)", "vi": "lời đảm bảo", "pron": "əˈʃʊrəns" },
-    { "en": "Cancellation, "type": "(n)", "vi": "sự bãi bỏ", "pron": "ˌkænsəˈleɪʃən" },
+    { "en": "Agreement", "type": "(n)", "vi": "sự đồng ý, hợp đồng", "pron": "əˈɡriːmənt" },
+    { "en": "Assurance", "type": "(n)", "vi": "lời đảm bảo", "pron": "əˈʃʊrəns" },
+    { "en": "Cancellation", "type": "(n)", "vi": "sự bãi bỏ", "pron": "ˌkænsəˈleɪʃən" },
     { "en": "Determine", "type": "(v)", "vi": "quyết định, xác định", "pron": "dɪˈtɜːrmɪn" }, 
     { "en": "Engage", "type": "(v)", "vi": "tham gia, cam kết", "pron": "ɪnˈɡeɪdʒ" },
     { "en": "Establish", "type": "(v)", "vi": "thành lập, củng cố", "pro": "ɪˈstæblɪʃ" }, 
@@ -17,4 +17,5 @@
   ]
 
 };
+
 
