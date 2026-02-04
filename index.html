@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal TOEIC Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i> TOEIC PRO
+        </div>
+        
+        <div class="menu-label">KỸ NĂNG</div>
+        <nav class="nav-menu">
+            <button onclick="openTab('vocab')" class="nav-item active">
+                <i class="fas fa-book"></i> Từ Vựng
+            </button>
+            <button onclick="openTab('listening')" class="nav-item">
+                <i class="fas fa-headphones-alt"></i> Luyện Nghe
+            </button>
+            <button onclick="openTab('speaking')" class="nav-item">
+                <i class="fas fa-microphone-alt"></i> Luyện Nói
+            </button>
+            <button onclick="openTab('reading')" class="nav-item">
+                <i class="fas fa-glasses"></i> Luyện Đọc
+            </button>
+            <button onclick="openTab('writing')" class="nav-item">
+                <i class="fas fa-pen-nib"></i> Luyện Viết
+            </button>
+        </nav>
+
+        <div class="target-box">
+            <div class="menu-label">MỤC TIÊU</div>
+            <p><i class="fas fa-check-circle"></i> Nghe/Đọc: 450</p>
+            <p><i class="fas fa-check-circle"></i> Nói: 105</p>
+            <p><i class="fas fa-check-circle"></i> Viết: 90</p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <header>
+            <div class="welcome-text">
+                <h1>Chào bạn! 👋</h1>
+                <p>Hôm nay chúng ta sẽ chinh phục bài học nào?</p>
+            </div>
+            
+            <div class="lesson-control">
+                <div class="select-wrapper">
+                    <select id="lesson-selector" onchange="loadLessonData()">
+                        <option value="1">Bài học số 1</option>
+                        <option value="2">Bài học số 2</option>
+                        <option value="3">Bài học số 3</option>
+                        <option value="4">Bài học số 4</option>
+                        <option value="5">Bài học số 5</option>
+                    </select>
+                </div>
+                <button class="btn-refresh" onclick="loadLessonData()">
+                    <i class="fas fa-sync-alt"></i> Nạp bài
+                </button>
+            </div>
+        </header>
+
+        <div class="content-area">
+            
+            <div id="vocab" class="content active">
+                <div class="card-header">
+                    <h2><i class="fas fa-book-open"></i> Từ Vựng Theo Chủ Đề</h2>
+                    <span id="vocab-topic" class="badge">Đang tải...</span>
+                </div>
+                <div id="vocab-list" class="grid-vocab"></div>
+                <div class="card reading-card">
+                    <h3><i class="fas fa-align-left"></i> Đoạn văn ứng dụng</h3>
+                    <p id="vocab-text">Chọn bài học để hiển thị...</p>
+                </div>
+            </div>
+
+            <div id="listening" class="content">
+                <div class="card-header">
+                    <h2><i class="fas fa-headphones"></i> Luyện Nghe (Photographs)</h2>
+                </div>
+                <div class="media-layout">
+                    <div class="image-box">
+                        <img id="listen-img" src="" alt="Chưa có ảnh" class="lesson-img">
+                    </div>
+                    <div class="audio-box">
+                        <audio id="listen-audio" controls class="custom-audio"></audio>
+                        <div class="transcript-box">
+                            <button onclick="toggleTranscript()" class="btn-secondary">
+                                <i class="fas fa-eye"></i> Xem Transcript
+                            </button>
+                            <p id="transcript" style="display:none;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="speaking" class="content">
+                <div class="card-header">
+                    <h2><i class="fas fa-microphone"></i> Luyện Nói</h2>
+                </div>
+                <div class="media-layout">
+                    <div class="image-box">
+                        <img id="speak-img" src="" alt="Chưa có ảnh" class="lesson-img">
+                    </div>
+                    <div class="action-box">
+                        <p><strong>Audio mẫu:</strong></p>
+                        <audio id="speak-sample" controls class="custom-audio"></audio>
+                        <hr>
+                        <p><strong>Ghi âm giọng bạn:</strong></p>
+                        <div class="record-controls">
+                            <button id="btn-record" class="btn-record"><i class="fas fa-microphone"></i> Thu âm</button>
+                            <button id="btn-stop" class="btn-stop" disabled><i class="fas fa-stop"></i> Dừng</button>
+                        </div>
+                        <audio id="user-recording" controls class="custom-audio"></audio>
+                    </div>
+                </div>
+            </div>
+
+            <div id="writing" class="content">
+                <div class="card-header">
+                    <h2><i class="fas fa-pen"></i> Luyện Viết</h2>
+                </div>
+                <div class="card">
+                    <p id="write-prompt" class="prompt-text">Đề bài đang tải...</p>
+                    <textarea placeholder="Nhập bài viết của bạn vào đây..." rows="8"></textarea>
+                    <div class="btn-group">
+                        <button onclick="showSample()" class="btn-primary">Xem bài mẫu</button>
+                    </div>
+                    <div id="write-sample" class="sample-box hidden">
+                        <h3>Bài mẫu tham khảo:</h3>
+                        <p id="write-sample-text"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reading" class="content">
+                <div class="card-header">
+                    <h2><i class="fas fa-glasses"></i> Đọc Hiểu</h2>
+                </div>
+                <div class="reading-layout">
+                    <div class="passage-col">
+                        <div class="paper">
+                            <p id="read-passage"></p>
+                        </div>
+                    </div>
+                    <div class="quiz-col">
+                        <div id="read-quiz" class="quiz-box"></div>
+                        <button onclick="checkReadingResult()" class="btn-primary full-width">Kiểm tra</button>
+                        <p id="read-result" class="result-text"></p>
+                    </div>
+                </div>
+            </div>
+
+        </div> </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
