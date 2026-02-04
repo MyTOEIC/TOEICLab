@@ -58,15 +58,23 @@ function renderVocab(data) {
     list.innerHTML = '';
     
     data.items.forEach(w => {
-        // Dùng link Google (Ổn định nhất nhờ thẻ meta referrer)
+        // Tạo link Google TTS
         const audioSrc = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=${w.en}&tl=en`;
         
+        // Kiểm tra xem có từ loại không, nếu không có thì để trống
+        const typeText = w.type ? `<span class="pos-tag">${w.type}</span>` : '';
+
         list.innerHTML += `
             <div class="vocab-item">
-                <strong style="color:var(--primary); font-size:1.2rem">${w.en}</strong> 
-                <small>${w.pron}</small><br><span>${w.vi}</span>
+                <div style="margin-bottom: 5px;">
+                    <strong style="color:var(--primary); font-size:1.2rem">${w.en}</strong>
+                    ${typeText} </div>
+                
+                <small style="color:#666;">${w.pron}</small><br>
+                <span style="font-size:1.05rem;">${w.vi}</span>
+                
                 <button onclick="playSound('${audioSrc}')" 
-                style="position:absolute; top:15px; right:15px; border:none; background:#f1f5f9; width:35px; height:35px; border-radius:50%; cursor:pointer;">
+                style="position:absolute; top:20px; right:15px; border:none; background:#f1f5f9; width:35px; height:35px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;">
                     🔊
                 </button>
             </div>`;
@@ -190,3 +198,4 @@ function checkReadingResult() {
 }
 
 window.onload = () => { openTab('vocab'); };
+
