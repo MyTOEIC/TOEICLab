@@ -235,4 +235,19 @@ textarea {
     .nav-item { justify-content: center; }
     .main-content { margin-left: 70px; padding: 15px; }
     .media-layout, .reading-layout { grid-template-columns: 1fr; }
+
+}
+
+/* Thêm vào cuối file style.css */
+
+.pos-tag {
+    font-size: 0.85rem;       /* Chữ nhỏ hơn */
+    color: #4338ca;           /* Màu chữ xanh đậm */
+    background-color: #e0e7ff; /* Nền xanh nhạt */
+    padding: 2px 8px;         /* Khoảng cách lề */
+    border-radius: 12px;      /* Bo tròn góc */
+    margin-left: 8px;         /* Cách từ tiếng Anh một chút */
+    font-style: italic;       /* Chữ nghiêng */
+    font-weight: normal;      /* Chữ thường (không đậm) */
+    vertical-align: middle;   /* Căn giữa theo chiều dọc */
 }
