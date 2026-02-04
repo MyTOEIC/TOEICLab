@@ -51,34 +51,93 @@ function loadLessonData() {
 
 // --- 3. HIỂN THỊ (RENDER) ---
 
+// Thay thế hàm renderVocab cũ bằng hàm này:
 function renderVocab(data) {
     document.getElementById('vocab-topic').textContent = data.title;
-    document.getElementById('vocab-text').innerHTML = data.content;
+    
+    // 1. Xử lý phần ĐOẠN VĂN (Bài đọc)
+    const readingCard = document.querySelector('.reading-card');
+    
+    // Lưu nội dung tiếng Anh và tiếng Việt vào biến tạm để dùng cho nút bấm
+    const englishText = data.content;
+    const vietnameseText = data.content_vi || "Chưa có bản dịch cho bài này.";
+
+    // Cập nhật HTML cho thẻ Reading Card (Thêm nút điều khiển)
+    readingCard.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3><i class="fas fa-align-left"></i> Đoạn văn ứng dụng</h3>
+            <div class="control-btns">
+                <button onclick="readParagraph()" class="btn-icon" title="Nghe đoạn văn">
+                    <i class="fas fa-volume-up"></i> Nghe
+                </button>
+                <button onclick="toggleTrans()" class="btn-icon" title="Xem dịch nghĩa">
+                    <i class="fas fa-language"></i> Dịch
+                </button>
+            </div>
+        </div>
+        
+        <p id="vocab-text" style="font-size:1.05rem; line-height:1.6; margin-bottom:15px;">
+            ${englishText}
+        </p>
+        
+        <div id="vocab-trans" style="display:none; border-top:1px dashed #ccc; padding-top:10px; color:#555; font-style:italic;">
+            ${vietnameseText}
+        </div>
+    `;
+
+    // 2. Xử lý phần DANH SÁCH TỪ VỰNG (Giữ nguyên logic cũ)
     const list = document.getElementById('vocab-list');
     list.innerHTML = '';
     
     data.items.forEach(w => {
-        // Tạo link Google TTS
         const audioSrc = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=${w.en}&tl=en`;
-        
-        // Kiểm tra xem có từ loại không, nếu không có thì để trống
         const typeText = w.type ? `<span class="pos-tag">${w.type}</span>` : '';
 
         list.innerHTML += `
             <div class="vocab-item">
                 <div style="margin-bottom: 5px;">
                     <strong style="color:var(--primary); font-size:1.2rem">${w.en}</strong>
-                    ${typeText} </div>
-                
+                    ${typeText}
+                </div>
                 <small style="color:#666;">${w.pron}</small><br>
                 <span style="font-size:1.05rem;">${w.vi}</span>
-                
                 <button onclick="playSound('${audioSrc}')" 
                 style="position:absolute; top:20px; right:15px; border:none; background:#f1f5f9; width:35px; height:35px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;">
                     🔊
                 </button>
             </div>`;
     });
+}
+
+// --- CÁC HÀM HỖ TRỢ MỚI ---
+
+// Hàm đọc đoạn văn (Tự động lọc bỏ thẻ HTML <b> để đọc mượt)
+function readParagraph() {
+    window.speechSynthesis.cancel();
+    
+    // Lấy nội dung HTML hiện tại
+    const htmlContent = document.getElementById('vocab-text').innerHTML;
+    
+    // Mẹo: Tạo thẻ div ảo để lấy text thuần (bỏ hết <b>, <i>...)
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = htmlContent;
+    const cleanText = tempDiv.textContent || tempDiv.innerText;
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'en-US'; 
+    utterance.rate = 0.9; // Đọc chậm rãi
+    window.speechSynthesis.speak(utterance);
+}
+
+// Hàm hiện/ẩn bản dịch
+function toggleTrans() {
+    const transDiv = document.getElementById('vocab-trans');
+    if (transDiv.style.display === 'none') {
+        transDiv.style.display = 'block';
+        transDiv.classList.add('fade-in'); // Thêm hiệu ứng hiện dần
+    } else {
+        transDiv.style.display = 'none';
+    }
 }
 
 // Hàm phát âm thanh chung
@@ -198,4 +257,5 @@ function checkReadingResult() {
 }
 
 window.onload = () => { openTab('vocab'); };
+
 
