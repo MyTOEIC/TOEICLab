@@ -251,3 +251,31 @@ textarea {
     font-weight: normal;      /* Chữ thường (không đậm) */
     vertical-align: middle;   /* Căn giữa theo chiều dọc */
 }
+
+/* Thêm vào cuối file style.css */
+
+.btn-icon {
+    background: white;
+    border: 1px solid #cbd5e1;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--secondary);
+    transition: all 0.2s;
+    margin-left: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-icon:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.fade-in {
+    animation: fadeIn 0.5s;
+}
+
