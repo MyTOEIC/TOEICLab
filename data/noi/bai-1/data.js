@@ -5,7 +5,7 @@
   "image": "hinh-anh.jpg", 
   
   // Tên file audio mẫu (Sample answer)
-  "audio": "mau-tra-loi.mp3",
+  "audio": "amthanh.mp3",
   
   // (Tùy chọn) Transcript bài nói mẫu để bạn tham khảo
   "transcript": `This Sunday, Jazz Master Coffee Shop invites coffee lovers to a tasting event at our store. 
@@ -14,3 +14,4 @@
     `
 
 };
+
