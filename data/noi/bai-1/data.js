@@ -8,5 +8,9 @@
   "audio": "mau-tra-loi.mp3",
   
   // (Tùy chọn) Transcript bài nói mẫu để bạn tham khảo
-  "transcript": "In this picture, I can see a group of people in a meeting room. They are sitting around a large wooden table. The man in the blue shirt is pointing at a document..."
+  "transcript": `This Sunday, Jazz Master Coffee Shop invites coffee lovers to a tasting event at our store. 
+    Visit the shop between 6 and 9 o'clock to enjoy half price desserts, live music, and our exclusive coffee from Columbia.
+   While you're here, you can complete a customer survey to receive a pack of free coffee to brew at home
+    `
+
 };
