@@ -159,10 +159,35 @@ function toggleTranscript() {
 // --- CẬP NHẬT PHẦN SPEAKING (NÓI) ---
 
 function renderSpeaking(data, path) {
-    document.getElementById('speak-img').src = `${path}/${data.image}`;
+    const layout = document.getElementById('speak-layout');
+    const imgBox = document.getElementById('speak-img-box');
+    const imgElement = document.getElementById('speak-img');
+    const textBox = document.getElementById('speak-text');
+
+    // 1. XỬ LÝ VĂN BẢN (Nếu có thì hiện, không thì ẩn)
+    if (data.content) {
+        textBox.style.display = 'block';
+        textBox.innerHTML = data.content; // Dùng innerHTML để hỗ trợ thẻ <b>, <br>
+    } else {
+        textBox.style.display = 'none';
+    }
+
+    // 2. XỬ LÝ HÌNH ẢNH (Logic quan trọng)
+    if (data.image && data.image !== "") {
+        // TRƯỜNG HỢP CÓ ẢNH
+        layout.classList.remove('no-image'); // Xóa class đặc biệt
+        imgBox.style.display = 'block';      // Hiện khung ảnh
+        imgElement.src = `${path}/${data.image}`;
+    } else {
+        // TRƯỜNG HỢP KHÔNG CÓ ẢNH (Chỉ có văn bản)
+        layout.classList.add('no-image');    // Thêm class để CSS biết mà chỉnh layout
+        imgBox.style.display = 'none';       // Ẩn khung ảnh
+    }
+
+    // 3. XỬ LÝ AUDIO MẪU
     document.getElementById('speak-sample').src = `${path}/${data.audio}`;
     
-    // Gọi hàm khởi tạo ghi âm
+    // 4. KÍCH HOẠT GHI ÂM
     setupRecorder();
 }
 
@@ -257,5 +282,6 @@ function checkReadingResult() {
 }
 
 window.onload = () => { openTab('vocab'); };
+
 
 
