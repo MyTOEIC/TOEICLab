@@ -102,26 +102,29 @@
             </div>
 
             <div id="speaking" class="content">
-                <div class="card-header">
-                    <h2><i class="fas fa-microphone"></i> Luyện Nói</h2>
-                </div>
-                <div class="media-layout">
-                    <div class="image-box">
-                        <img id="speak-img" src="" alt="Chưa có ảnh" class="lesson-img">
-                    </div>
-                    <div class="action-box">
-                        <p><strong>Audio mẫu:</strong></p>
-                        <audio id="speak-sample" controls class="custom-audio"></audio>
-                        <hr>
-                        <p><strong>Ghi âm giọng bạn:</strong></p>
-                        <div class="record-controls">
-                            <button id="btn-record" class="btn-record"><i class="fas fa-microphone"></i> Thu âm</button>
-                            <button id="btn-stop" class="btn-stop" disabled><i class="fas fa-stop"></i> Dừng</button>
-                        </div>
-                        <audio id="user-recording" controls class="custom-audio"></audio>
-                    </div>
-                </div>
+    <div class="card-header">
+        <h2><i class="fas fa-microphone"></i> Luyện Nói</h2>
+    </div>
+    
+    <div id="speak-text" class="card" style="margin-bottom: 20px; font-size: 1.2rem; display: none;"></div>
+
+    <div class="media-layout" id="speak-layout">
+        <div class="image-box" id="speak-img-box">
+            <img id="speak-img" src="" alt="Chưa có ảnh" class="lesson-img">
+        </div>
+        <div class="action-box">
+            <p><strong>Audio mẫu:</strong></p>
+            <audio id="speak-sample" controls class="custom-audio"></audio>
+            <hr>
+            <p><strong>Ghi âm giọng bạn:</strong></p>
+            <div class="record-controls">
+                <button id="btn-record" class="btn-record"><i class="fas fa-microphone"></i> Thu âm</button>
+                <button id="btn-stop" class="btn-stop" disabled><i class="fas fa-stop"></i> Dừng</button>
             </div>
+            <audio id="user-recording" controls class="custom-audio"></audio>
+        </div>
+    </div>
+</div>
 
             <div id="writing" class="content">
                 <div class="card-header">
@@ -164,3 +167,4 @@
 </body>
 
 </html>
+
