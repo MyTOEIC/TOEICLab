@@ -279,3 +279,25 @@ textarea {
     animation: fadeIn 0.5s;
 }
 
+/* Thêm vào cuối file style.css */
+
+/* Khi có class 'no-image', ẩn cột hình ảnh đi */
+.media-layout.no-image .image-box {
+    display: none;
+}
+
+/* Khi không có ảnh, cột thao tác sẽ bung rộng 100% */
+.media-layout.no-image {
+    grid-template-columns: 1fr; /* Chuyển về 1 cột duy nhất */
+}
+
+/* Trang trí cho đoạn văn bản nói */
+#speak-text {
+    background: #fff;
+    padding: 20px;
+    border-left: 5px solid var(--primary);
+    line-height: 1.6;
+    color: var(--text-dark);
+}
+
+
