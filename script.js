@@ -146,99 +146,79 @@ function playSound(url) {
     audio.play().catch(e => alert("Lỗi âm thanh: " + e));
 }
 
-// --- 1. HÀM HIỂN THỊ LISTENING (CẬP NHẬT) ---
 function renderListening(data, path) {
     const container = document.getElementById('listening');
+    
+    // 1. Vẽ tiêu đề bài học
     container.innerHTML = `
-        <div class="card-header"><h2><i class="fas fa-headphones"></i> ${data.title}</h2></div>
+        <div class="card-header">
+            <h2><i class="fas fa-headphones"></i> ${data.title}</h2>
+        </div>
         <div id="listening-list" class="listening-container"></div>
     `;
+
     const list = document.getElementById('listening-list');
 
+    // 2. Duyệt qua từng câu hỏi/bài nghe
     data.items.forEach((group, index) => {
+        // Tạo HTML Ảnh (nếu có) và Audio
         let htmlImage = group.image ? `<img src="${path}/${group.image}" class="listening-img">` : '';
         let htmlAudio = `<audio controls src="${path}/${group.audio}" class="listening-audio"></audio>`;
+        
+        // Tạo câu hỏi trắc nghiệm
         let htmlQuestions = '';
         
-        // --- XỬ LÝ PART 1 & 2 ---
+        // Part 1 & 2
         if (data.part === 1 || data.part === 2) {
-            // Truyền group.answer (đáp án đúng) vào hàm tạo HTML
             htmlQuestions += createQuizHTML(index, "Chọn đáp án đúng:", group.options, group.answer);
         } 
-        // --- XỬ LÝ PART 3 & 4 ---
+        // Part 3 & 4
         else if (data.part === 3 || data.part === 4) {
             group.questions.forEach((q, qIndex) => {
-                // Truyền q.answer vào hàm tạo HTML
                 htmlQuestions += createQuizHTML(`${index}_${qIndex}`, `${qIndex+1}. ${q.question}`, q.options, q.answer);
             });
         }
 
+        // Xử lý Transcript (An toàn hơn)
+        // Tạo ID duy nhất cho mỗi bài: trans-0, trans-1...
+        const transID = `trans-${index}`;
+        const transContent = group.transcript ? group.transcript.replace(/\n/g, '<br>') : "Chưa có transcript.";
+
+        let htmlTranscript = `
+            <div class="transcript-wrapper">
+                <button onclick="toggleListeningScript('${transID}')" class="btn-toggle-script">
+                    <i class="fas fa-file-alt"></i> Xem Transcript
+                </button>
+                <div id="${transID}" class="transcript-content">
+                    ${transContent}
+                </div>
+            </div>
+        `;
+
+        // Ghép tất cả vào giao diện
         list.innerHTML += `
             <div class="listening-group">
                 <h3 style="color:var(--primary); margin-bottom:10px; font-size:1rem;"># Audio ${index + 1}</h3>
-                ${htmlImage} ${htmlAudio}
+                ${htmlImage}
+                ${htmlAudio}
                 <div class="quiz-area">${htmlQuestions}</div>
-                <div class="transcript-box" id="script-${index}">
-                    <button onclick="this.nextElementSibling.style.display='block';this.style.display='none'" class="btn-toggle-script">Xem Transcript</button>
-                    <div style="display:none; margin-top:10px;">${group.transcript.replace(/\n/g, '<br>')}</div>
-                </div>
-            </div>`;
+                ${htmlTranscript}
+            </div>
+        `;
     });
 }
 
-// --- 2. HÀM TẠO HTML CÂU HỎI (CÓ LOGIC KIỂM TRA) ---
-function createQuizHTML(nameID, questionText, options, correctAnswerIndex) {
-    let htmlOpts = '';
-    options.forEach((opt, i) => {
-        const label = ["(A)", "(B)", "(C)", "(D)"][i];
-        
-        // Thêm sự kiện onchange để gọi hàm kiểm tra ngay khi chọn
-        htmlOpts += `
-            <label>
-                <input type="radio" name="ans_${nameID}" value="${i}" 
-                onchange="checkListeningAnswer(this, ${correctAnswerIndex})"> 
-                <b>${label}</b> ${opt}
-            </label>`;
-    });
-
-    return `
-        <div class="quiz-item">
-            <span class="quiz-question">${questionText}</span>
-            <div class="quiz-options">${htmlOpts}</div>
-        </div>`;
-}
-
-// --- 3. HÀM KIỂM TRA ĐÚNG/SAI (MỚI) ---
-function checkListeningAnswer(inputElement, correctIndex) {
-    // 1. Lấy giá trị người dùng chọn
-    const userChoice = parseInt(inputElement.value);
-    
-    // 2. Tìm thẻ cha (div.quiz-options) để thao tác với các lựa chọn khác
-    const optionsContainer = inputElement.closest('.quiz-options');
-    const allLabels = optionsContainer.querySelectorAll('label');
-
-    // 3. Reset màu (phòng trường hợp chọn lại)
-    allLabels.forEach(lbl => {
-        lbl.classList.remove('correct', 'wrong');
-    });
-
-    // 4. Kiểm tra và tô màu
-    const selectedLabel = inputElement.parentElement;
-    
-    if (userChoice === correctIndex) {
-        // Nếu ĐÚNG: Tô xanh đáp án đã chọn
-        selectedLabel.classList.add('correct');
+// --- HÀM BẬT/TẮT TRANSCRIPT MỚI ---
+function toggleListeningScript(id) {
+    const content = document.getElementById(id);
+    if (content.style.display === 'block') {
+        content.style.display = 'none';
     } else {
-        // Nếu SAI: Tô đỏ đáp án đã chọn
-        selectedLabel.classList.add('wrong');
-        
-        // VÀ TÔ XANH ĐÁP ÁN ĐÚNG (để người học biết câu nào đúng)
-        if(allLabels[correctIndex]) {
-            allLabels[correctIndex].classList.add('correct');
-        }
+        content.style.display = 'block';
     }
 }
 
+// (Các hàm createQuizHTML và checkListeningAnswer giữ nguyên không cần sửa)
 // --- CẬP NHẬT PHẦN SPEAKING (NÓI) ---
 
 function renderSpeaking(data, path) {
@@ -365,6 +345,7 @@ function checkReadingResult() {
 }
 
 window.onload = () => { openTab('vocab'); };
+
 
 
 
