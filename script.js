@@ -146,10 +146,18 @@ function playSound(url) {
     audio.play().catch(e => alert("Lỗi âm thanh: " + e));
 }
 
+// --- LOGIC LISTENING MỚI (Đã sửa lỗi hiển thị) ---
+
 function renderListening(data, path) {
     const container = document.getElementById('listening');
     
-    // 1. Vẽ tiêu đề bài học
+    // 1. Kiểm tra xem có dữ liệu items không
+    if (!data.items || data.items.length === 0) {
+        container.innerHTML = "<h3>Chưa có dữ liệu bài nghe.</h3>";
+        return;
+    }
+
+    // 2. Vẽ khung chứa
     container.innerHTML = `
         <div class="card-header">
             <h2><i class="fas fa-headphones"></i> ${data.title}</h2>
@@ -159,7 +167,7 @@ function renderListening(data, path) {
 
     const list = document.getElementById('listening-list');
 
-    // 2. Duyệt qua từng câu hỏi/bài nghe
+    // 3. Duyệt qua từng bài nghe
     data.items.forEach((group, index) => {
         // Tạo HTML Ảnh (nếu có) và Audio
         let htmlImage = group.image ? `<img src="${path}/${group.image}" class="listening-img">` : '';
@@ -168,37 +176,40 @@ function renderListening(data, path) {
         // Tạo câu hỏi trắc nghiệm
         let htmlQuestions = '';
         
-        // Part 1 & 2
+        // --- XỬ LÝ PART 1 & 2 (Câu hỏi đơn) ---
         if (data.part === 1 || data.part === 2) {
-            htmlQuestions += createQuizHTML(index, "Chọn đáp án đúng:", group.options, group.answer);
+            // Kiểm tra xem có options không để tránh lỗi
+            if(group.options) {
+                htmlQuestions += createQuizHTML(index, "Chọn đáp án đúng:", group.options, group.answer);
+            }
         } 
-        // Part 3 & 4
-        else if (data.part === 3 || data.part === 4) {
+        // --- XỬ LÝ PART 3 & 4 (Chùm câu hỏi) ---
+        else if ((data.part === 3 || data.part === 4) && group.questions) {
             group.questions.forEach((q, qIndex) => {
                 htmlQuestions += createQuizHTML(`${index}_${qIndex}`, `${qIndex+1}. ${q.question}`, q.options, q.answer);
             });
         }
 
-        // Xử lý Transcript (An toàn hơn)
-        // Tạo ID duy nhất cho mỗi bài: trans-0, trans-1...
+        // Xử lý Transcript
         const transID = `trans-${index}`;
-        const transContent = group.transcript ? group.transcript.replace(/\n/g, '<br>') : "Chưa có transcript.";
+        // Nếu không có transcript thì để chuỗi rỗng
+        const transText = group.transcript ? group.transcript.replace(/\n/g, '<br>') : "Chưa có nội dung transcript.";
 
         let htmlTranscript = `
-            <div class="transcript-wrapper">
-                <button onclick="toggleListeningScript('${transID}')" class="btn-toggle-script">
+            <div class="transcript-wrapper" style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
+                <button onclick="toggleListeningScript('${transID}')" class="btn-toggle-script" style="background:none; border:none; color:blue; cursor:pointer;">
                     <i class="fas fa-file-alt"></i> Xem Transcript
                 </button>
-                <div id="${transID}" class="transcript-content">
-                    ${transContent}
+                <div id="${transID}" class="transcript-content" style="display:none; margin-top:10px; background:#f9f9f9; padding:10px; border-left:3px solid blue;">
+                    ${transText}
                 </div>
             </div>
         `;
 
-        // Ghép tất cả vào giao diện
+        // Ghép vào giao diện
         list.innerHTML += `
-            <div class="listening-group">
-                <h3 style="color:var(--primary); margin-bottom:10px; font-size:1rem;"># Audio ${index + 1}</h3>
+            <div class="listening-group" style="background:white; padding:20px; margin-bottom:20px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                <h3 style="color:#4f46e5; margin-bottom:10px;"># Audio ${index + 1}</h3>
                 ${htmlImage}
                 ${htmlAudio}
                 <div class="quiz-area">${htmlQuestions}</div>
@@ -208,17 +219,50 @@ function renderListening(data, path) {
     });
 }
 
-// --- HÀM BẬT/TẮT TRANSCRIPT MỚI ---
-function toggleListeningScript(id) {
-    const content = document.getElementById(id);
-    if (content.style.display === 'block') {
-        content.style.display = 'none';
+// Hàm tạo câu hỏi trắc nghiệm
+function createQuizHTML(nameID, questionText, options, correctAnswerIndex) {
+    let htmlOpts = '';
+    options.forEach((opt, i) => {
+        const label = ["(A)", "(B)", "(C)", "(D)"][i];
+        // Thêm onclick để check đáp án
+        htmlOpts += `
+            <label style="display:block; padding:8px; cursor:pointer; border:1px solid #eee; margin:5px 0; border-radius:5px;">
+                <input type="radio" name="ans_${nameID}" value="${i}" onclick="checkListeningAnswer(this, ${correctAnswerIndex})"> 
+                <b>${label}</b> ${opt}
+            </label>`;
+    });
+
+    return `
+        <div class="quiz-item" style="margin-bottom:15px;">
+            <strong class="quiz-question" style="display:block; margin-bottom:5px;">${questionText}</strong>
+            <div class="quiz-options">${htmlOpts}</div>
+        </div>`;
+}
+
+// Hàm kiểm tra đúng sai (Tô màu)
+function checkListeningAnswer(inputElement, correctIndex) {
+    const userChoice = parseInt(inputElement.value);
+    const container = inputElement.closest('.quiz-options');
+    const labels = container.querySelectorAll('label');
+
+    // Reset màu cũ
+    labels.forEach(lbl => lbl.style.background = 'transparent');
+
+    // Tô màu
+    if (userChoice === correctIndex) {
+        inputElement.parentElement.style.background = '#dcfce7'; // Xanh (Đúng)
     } else {
-        content.style.display = 'block';
+        inputElement.parentElement.style.background = '#fee2e2'; // Đỏ (Sai)
+        // Hiện đáp án đúng
+        if(labels[correctIndex]) labels[correctIndex].style.background = '#dcfce7';
     }
 }
 
-// (Các hàm createQuizHTML và checkListeningAnswer giữ nguyên không cần sửa)
+// Hàm bật tắt transcript
+function toggleListeningScript(id) {
+    const div = document.getElementById(id);
+    div.style.display = (div.style.display === 'none') ? 'block' : 'none';
+}
 // --- CẬP NHẬT PHẦN SPEAKING (NÓI) ---
 
 function renderSpeaking(data, path) {
@@ -345,6 +389,7 @@ function checkReadingResult() {
 }
 
 window.onload = () => { openTab('vocab'); };
+
 
 
 
