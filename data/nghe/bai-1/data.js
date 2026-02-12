@@ -22,7 +22,8 @@
 (B) He is paying the bill. \n
 (C) He is serving food. \n
 (D) He is cleaning the table.`,
-      "options": ["(A)", "(B)", "(C)", "(D)"]
+      "options": ["(A)", "(B)", "(C)", "(D)"], 
+      "answer": 0
     }, // <--- Dấu phẩy tiếp
 
     // --- CÂU HỎI SỐ 3 ---
@@ -33,11 +34,13 @@
 (B) They are painting the wall. \n
 (C) They are turning off the lights. \n
 (D) They are sitting on the floor.`,
-      "options": ["(A)", "(B)", "(C)", "(D)"]
+      "options": ["(A)", "(B)", "(C)", "(D)"], 
+      "answer": 0
     }
     // Câu cuối cùng thì KHÔNG cần dấu phẩy
   ]
 };
+
 
 
 
