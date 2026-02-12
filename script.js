@@ -146,14 +146,86 @@ function playSound(url) {
     audio.play().catch(e => alert("Lỗi âm thanh: " + e));
 }
 
+// --- XỬ LÝ LISTENING (Hỗ trợ Part 1, 2, 3, 4) ---
 function renderListening(data, path) {
-    document.getElementById('listen-img').src = `${path}/${data.image}`;
-    document.getElementById('listen-audio').src = `${path}/${data.audio}`;
-    document.getElementById('transcript').textContent = data.transcript;
+    const container = document.getElementById('listening');
+    
+    // Xóa nội dung cũ, giữ lại tiêu đề
+    container.innerHTML = `
+        <div class="card-header">
+            <h2><i class="fas fa-headphones"></i> ${data.title}</h2>
+        </div>
+        <div id="listening-list" class="listening-container"></div>
+    `;
+
+    const list = document.getElementById('listening-list');
+
+    // Duyệt qua từng nhóm câu hỏi trong bài
+    data.items.forEach((group, index) => {
+        // Tạo HTML cho Audio và Ảnh (nếu có)
+        let htmlImage = group.image ? `<img src="${path}/${group.image}" class="listening-img">` : '';
+        let htmlAudio = `<audio controls src="${path}/${group.audio}" class="listening-audio"></audio>`;
+        
+        // Tạo HTML cho các câu hỏi trắc nghiệm
+        let htmlQuestions = '';
+        
+        // Nếu là Part 1 hoặc 2 (Chỉ có 1 câu hỏi ẩn hoặc hiện)
+        if (data.part === 1 || data.part === 2) {
+            htmlQuestions += createQuizHTML(index, "Chọn đáp án đúng:", group.options);
+        } 
+        // Nếu là Part 3 hoặc 4 (1 Audio có 3 câu hỏi con)
+        else if (data.part === 3 || data.part === 4) {
+            group.questions.forEach((q, qIndex) => {
+                // Tạo ID duy nhất cho mỗi câu hỏi: q_0_0, q_0_1...
+                htmlQuestions += createQuizHTML(`${index}_${qIndex}`, `${qIndex+1}. ${q.question}`, q.options);
+            });
+        }
+
+        // Tạo khung Transcript
+        let htmlTranscript = `
+            <button onclick="toggleScript('script-${index}')" class="btn-toggle-script">Xem/Ẩn Transcript</button>
+            <div id="script-${index}" class="transcript-box">
+                ${group.transcript.replace(/\n/g, '<br>')}
+            </div>
+        `;
+
+        // Ghép tất cả lại
+        list.innerHTML += `
+            <div class="listening-group">
+                ${htmlImage}
+                ${htmlAudio}
+                <div class="quiz-area">${htmlQuestions}</div>
+                ${htmlTranscript}
+            </div>
+        `;
+    });
 }
-function toggleTranscript() {
-    const t = document.getElementById('transcript');
-    t.style.display = t.style.display === 'none' ? 'block' : 'none';
+
+// Hàm phụ trợ tạo giao diện câu trắc nghiệm
+function createQuizHTML(nameID, questionText, options) {
+    let htmlOpts = '';
+    options.forEach((opt, i) => {
+        // A, B, C, D
+        const label = ["(A)", "(B)", "(C)", "(D)"][i];
+        htmlOpts += `
+            <label>
+                <input type="radio" name="ans_${nameID}" value="${i}"> 
+                <b>${label}</b> ${opt}
+            </label>`;
+    });
+
+    return `
+        <div class="quiz-item">
+            <span class="quiz-question">${questionText}</span>
+            <div class="quiz-options">${htmlOpts}</div>
+        </div>
+    `;
+}
+
+// Hàm bật tắt transcript
+function toggleScript(id) {
+    const div = document.getElementById(id);
+    div.style.display = (div.style.display === 'block') ? 'none' : 'block';
 }
 
 // --- CẬP NHẬT PHẦN SPEAKING (NÓI) ---
@@ -282,6 +354,7 @@ function checkReadingResult() {
 }
 
 window.onload = () => { openTab('vocab'); };
+
 
 
 
