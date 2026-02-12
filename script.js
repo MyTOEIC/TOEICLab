@@ -146,70 +146,57 @@ function playSound(url) {
     audio.play().catch(e => alert("Lỗi âm thanh: " + e));
 }
 
-// --- XỬ LÝ LISTENING (Hỗ trợ Part 1, 2, 3, 4) ---
+// --- 1. HÀM HIỂN THỊ LISTENING (CẬP NHẬT) ---
 function renderListening(data, path) {
     const container = document.getElementById('listening');
-    
-    // Xóa nội dung cũ, giữ lại tiêu đề
     container.innerHTML = `
-        <div class="card-header">
-            <h2><i class="fas fa-headphones"></i> ${data.title}</h2>
-        </div>
+        <div class="card-header"><h2><i class="fas fa-headphones"></i> ${data.title}</h2></div>
         <div id="listening-list" class="listening-container"></div>
     `;
-
     const list = document.getElementById('listening-list');
 
-    // Duyệt qua từng nhóm câu hỏi trong bài
     data.items.forEach((group, index) => {
-        // Tạo HTML cho Audio và Ảnh (nếu có)
         let htmlImage = group.image ? `<img src="${path}/${group.image}" class="listening-img">` : '';
         let htmlAudio = `<audio controls src="${path}/${group.audio}" class="listening-audio"></audio>`;
-        
-        // Tạo HTML cho các câu hỏi trắc nghiệm
         let htmlQuestions = '';
         
-        // Nếu là Part 1 hoặc 2 (Chỉ có 1 câu hỏi ẩn hoặc hiện)
+        // --- XỬ LÝ PART 1 & 2 ---
         if (data.part === 1 || data.part === 2) {
-            htmlQuestions += createQuizHTML(index, "Chọn đáp án đúng:", group.options);
+            // Truyền group.answer (đáp án đúng) vào hàm tạo HTML
+            htmlQuestions += createQuizHTML(index, "Chọn đáp án đúng:", group.options, group.answer);
         } 
-        // Nếu là Part 3 hoặc 4 (1 Audio có 3 câu hỏi con)
+        // --- XỬ LÝ PART 3 & 4 ---
         else if (data.part === 3 || data.part === 4) {
             group.questions.forEach((q, qIndex) => {
-                // Tạo ID duy nhất cho mỗi câu hỏi: q_0_0, q_0_1...
-                htmlQuestions += createQuizHTML(`${index}_${qIndex}`, `${qIndex+1}. ${q.question}`, q.options);
+                // Truyền q.answer vào hàm tạo HTML
+                htmlQuestions += createQuizHTML(`${index}_${qIndex}`, `${qIndex+1}. ${q.question}`, q.options, q.answer);
             });
         }
 
-        // Tạo khung Transcript
-        let htmlTranscript = `
-            <button onclick="toggleScript('script-${index}')" class="btn-toggle-script">Xem/Ẩn Transcript</button>
-            <div id="script-${index}" class="transcript-box">
-                ${group.transcript.replace(/\n/g, '<br>')}
-            </div>
-        `;
-
-        // Ghép tất cả lại
         list.innerHTML += `
             <div class="listening-group">
-                ${htmlImage}
-                ${htmlAudio}
+                <h3 style="color:var(--primary); margin-bottom:10px; font-size:1rem;"># Audio ${index + 1}</h3>
+                ${htmlImage} ${htmlAudio}
                 <div class="quiz-area">${htmlQuestions}</div>
-                ${htmlTranscript}
-            </div>
-        `;
+                <div class="transcript-box" id="script-${index}">
+                    <button onclick="this.nextElementSibling.style.display='block';this.style.display='none'" class="btn-toggle-script">Xem Transcript</button>
+                    <div style="display:none; margin-top:10px;">${group.transcript.replace(/\n/g, '<br>')}</div>
+                </div>
+            </div>`;
     });
 }
 
-// Hàm phụ trợ tạo giao diện câu trắc nghiệm
-function createQuizHTML(nameID, questionText, options) {
+// --- 2. HÀM TẠO HTML CÂU HỎI (CÓ LOGIC KIỂM TRA) ---
+function createQuizHTML(nameID, questionText, options, correctAnswerIndex) {
     let htmlOpts = '';
     options.forEach((opt, i) => {
-        // A, B, C, D
         const label = ["(A)", "(B)", "(C)", "(D)"][i];
+        
+        // Thêm sự kiện onchange để gọi hàm kiểm tra ngay khi chọn
         htmlOpts += `
             <label>
-                <input type="radio" name="ans_${nameID}" value="${i}"> 
+                <input type="radio" name="ans_${nameID}" value="${i}" 
+                onchange="checkListeningAnswer(this, ${correctAnswerIndex})"> 
                 <b>${label}</b> ${opt}
             </label>`;
     });
@@ -218,14 +205,38 @@ function createQuizHTML(nameID, questionText, options) {
         <div class="quiz-item">
             <span class="quiz-question">${questionText}</span>
             <div class="quiz-options">${htmlOpts}</div>
-        </div>
-    `;
+        </div>`;
 }
 
-// Hàm bật tắt transcript
-function toggleScript(id) {
-    const div = document.getElementById(id);
-    div.style.display = (div.style.display === 'block') ? 'none' : 'block';
+// --- 3. HÀM KIỂM TRA ĐÚNG/SAI (MỚI) ---
+function checkListeningAnswer(inputElement, correctIndex) {
+    // 1. Lấy giá trị người dùng chọn
+    const userChoice = parseInt(inputElement.value);
+    
+    // 2. Tìm thẻ cha (div.quiz-options) để thao tác với các lựa chọn khác
+    const optionsContainer = inputElement.closest('.quiz-options');
+    const allLabels = optionsContainer.querySelectorAll('label');
+
+    // 3. Reset màu (phòng trường hợp chọn lại)
+    allLabels.forEach(lbl => {
+        lbl.classList.remove('correct', 'wrong');
+    });
+
+    // 4. Kiểm tra và tô màu
+    const selectedLabel = inputElement.parentElement;
+    
+    if (userChoice === correctIndex) {
+        // Nếu ĐÚNG: Tô xanh đáp án đã chọn
+        selectedLabel.classList.add('correct');
+    } else {
+        // Nếu SAI: Tô đỏ đáp án đã chọn
+        selectedLabel.classList.add('wrong');
+        
+        // VÀ TÔ XANH ĐÁP ÁN ĐÚNG (để người học biết câu nào đúng)
+        if(allLabels[correctIndex]) {
+            allLabels[correctIndex].classList.add('correct');
+        }
+    }
 }
 
 // --- CẬP NHẬT PHẦN SPEAKING (NÓI) ---
@@ -354,6 +365,7 @@ function checkReadingResult() {
 }
 
 window.onload = () => { openTab('vocab'); };
+
 
 
 
