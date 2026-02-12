@@ -334,15 +334,42 @@ textarea {
 .quiz-options label:hover { background: #f1f5f9; border-color: #4f46e5; }
 .quiz-options input { margin-right: 10px; }
 
-/* Transcript (Lời thoại) */
-.transcript-box {
-    margin-top: 15px; padding: 15px; background: #f8fafc;
-    border-radius: 8px; font-size: 0.9rem; color: #475569;
-    border-left: 4px solid #94a3b8; display: none;
+/* --- SỬA LỖI TRANSCRIPT --- */
+
+/* Khung bao ngoài (Luôn hiện) */
+.transcript-wrapper {
+    margin-top: 15px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 10px;
 }
+
+/* Nút bấm (Luôn hiện) */
 .btn-toggle-script {
-    background: none; border: none; color: #4f46e5;
-    cursor: pointer; text-decoration: underline; font-size: 0.9rem;
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-toggle-script:hover {
+    text-decoration: underline;
+}
+
+/* Nội dung chữ (Mặc định ẩn) */
+.transcript-content {
+    display: none; /* Chỉ ẩn phần chữ */
+    margin-top: 10px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+    color: #334155;
+    line-height: 1.6;
+    font-size: 0.95rem;
 }
 
 /* --- TRẠNG THÁI ĐÚNG / SAI --- */
@@ -373,3 +400,4 @@ textarea {
 .quiz-options.locked {
     pointer-events: none; /* Vô hiệu hóa click */
 }
+
