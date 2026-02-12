@@ -345,3 +345,31 @@ textarea {
     cursor: pointer; text-decoration: underline; font-size: 0.9rem;
 }
 
+/* --- TRẠNG THÁI ĐÚNG / SAI --- */
+
+/* Khi chọn ĐÚNG: Màu xanh lá */
+.quiz-options label.correct {
+    background-color: #dcfce7;
+    border-color: #22c55e;
+    color: #166534;
+    font-weight: bold;
+}
+.quiz-options label.correct::after {
+    content: " ✓"; /* Thêm dấu tích */
+}
+
+/* Khi chọn SAI: Màu đỏ */
+.quiz-options label.wrong {
+    background-color: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+    opacity: 0.8;
+}
+.quiz-options label.wrong::after {
+    content: " ✕"; /* Thêm dấu x */
+}
+
+/* Chặn không cho chọn lại sau khi đã hiện kết quả (Optional) */
+.quiz-options.locked {
+    pointer-events: none; /* Vô hiệu hóa click */
+}
