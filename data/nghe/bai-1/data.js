@@ -4,7 +4,7 @@
   "items": [
     // --- CÂU HỎI SỐ 1 ---
     {
-      "image": "hinh-anh.jpg",
+      "image": "q1.jpg",
       "audio": "am-thanh.mp3",
       "transcript": "(A) They are shaking hands.\n(B) They are walking together.",
       "options": ["(A)", "(B)", "(C)", "(D)"],
@@ -29,6 +29,7 @@
     // Câu cuối cùng thì KHÔNG cần dấu phẩy
   ]
 };
+
 
 
 
