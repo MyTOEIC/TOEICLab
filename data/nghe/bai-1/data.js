@@ -3,7 +3,8 @@
 (B) She is watering the plants.
 (C) She is opening the gate.
 (D) She is carrying a box.`,
-  "image": "hinh-anh.jpg",
+  "image": "hinh-anh.png",
   "audio": "am-thanh.mp3"
 };
+
 
