@@ -300,4 +300,48 @@ textarea {
     color: var(--text-dark);
 }
 
+/* --- GIAO DIỆN LISTENING MỚI --- */
+.listening-container {
+    max-width: 800px; margin: 0 auto;
+}
+
+/* Khung cho mỗi nhóm câu hỏi (Ví dụ: 1 bài nghe Part 3 có 3 câu hỏi) */
+.listening-group {
+    background: #fff; padding: 20px; border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 30px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Ảnh Part 1 */
+.listening-img {
+    width: 100%; max-width: 500px; display: block; margin: 0 auto 15px;
+    border-radius: 8px; border: 1px solid #ddd;
+}
+
+/* Audio Player */
+.listening-audio { width: 100%; margin-bottom: 20px; }
+
+/* Câu hỏi trắc nghiệm */
+.quiz-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #eee; }
+.quiz-question { font-weight: 600; color: #1e293b; margin-bottom: 8px; display: block; }
+
+/* Đáp án (A, B, C, D) */
+.quiz-options label {
+    display: block; padding: 8px 12px; margin: 5px 0;
+    border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer;
+    transition: 0.2s; font-size: 0.95rem;
+}
+.quiz-options label:hover { background: #f1f5f9; border-color: #4f46e5; }
+.quiz-options input { margin-right: 10px; }
+
+/* Transcript (Lời thoại) */
+.transcript-box {
+    margin-top: 15px; padding: 15px; background: #f8fafc;
+    border-radius: 8px; font-size: 0.9rem; color: #475569;
+    border-left: 4px solid #94a3b8; display: none;
+}
+.btn-toggle-script {
+    background: none; border: none; color: #4f46e5;
+    cursor: pointer; text-decoration: underline; font-size: 0.9rem;
+}
 
