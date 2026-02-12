@@ -7,7 +7,8 @@
       "image": "hinh-anh.jpg",
       "audio": "am-thanh.mp3",
       "transcript": "(A) They are shaking hands.\n(B) They are walking together.",
-      "options": ["(A)", "(B)", "(C)", "(D)"] 
+      "options": ["(A)", "(B)", "(C)", "(D)"],
+      "answer": 1
     }, // <--- Nhớ có dấu phẩy ở đây để ngăn cách
 
     // --- CÂU HỎI SỐ 2 ---
@@ -28,6 +29,7 @@
     // Câu cuối cùng thì KHÔNG cần dấu phẩy
   ]
 };
+
 
 
 
