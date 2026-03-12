@@ -1,5 +1,5 @@
 window.lessonData = {
-  "title": "Chủ đề: Kế hoạch kinh doanh",
+  "title": "Chủ đề: Hội nghị",
   
   "items": [
   { "en": "Accommodate", "type": "(v)", "vi": "làm phù hợp, điều tiết", "pron": "/əˈkɑːmədeɪt/" },
