@@ -1,4 +1,7 @@
-"items": [
+window.lessonData = {
+  "title": "Chủ đề: Kế hoạch kinh doanh",
+  
+  "items": [
   { "en": "Accommodate", "type": "(v)", "vi": "làm phù hợp, điều tiết", "pron": "/əˈkɑːmədeɪt/" },
   { "en": "Arrangement", "type": "(n)", "vi": "sự thu xếp, sự bố trí", "pron": "/əˈreɪndʒmənt/" },
   { "en": "Association", "type": "(n)", "vi": "đoàn thể, sự kết hợp", "pron": "/əˌsoʊsiˈeɪʃən/" },
@@ -12,3 +15,4 @@
   { "en": "Session", "type": "(n)", "vi": "buổi họp", "pron": "/ˈseʃən/" },
   { "en": "Take part in", "type": "(ph.v)", "vi": "tham gia", "pron": "/teɪk pɑːrt ɪn/" }
 ]
+};
