@@ -39,7 +39,7 @@
     },
 // --- CÂU HỎI SỐ 4 ---
     {
-      "image": "q4.jpg",
+      "image": "q4.png",
       "audio": "audio_q4.mp3",
       "transcript": `(A) He is reading a menu.  
 (B) He is paying the bill. 
