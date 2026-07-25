@@ -50,7 +50,7 @@
     },
 // --- CÂU HỎI SỐ 5 ---
     {
-      "image": "q5.jpg",
+      "image": "q5.png",
       "audio": "audio_q5.mp3",
       "transcript": `(A) She is checking out customers.
 (B) She is arranging items on a shelf.
