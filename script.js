@@ -263,102 +263,83 @@ function toggleListeningScript(id) {
     const div = document.getElementById(id);
     div.style.display = (div.style.display === 'none') ? 'block' : 'none';
 }
-// --- CẬP NHẬT PHẦN SPEAKING (NÓI) ---
+// Biến lưu trữ bộ ghi âm cho nhiều câu hỏi khác nhau
+let mediaRecorders = {};
+let audioChunks = {};
 
 function renderSpeaking(data, path) {
-    const layout = document.getElementById('speak-layout');
-    const imgBox = document.getElementById('speak-img-box');
-    const imgElement = document.getElementById('speak-img');
-    const textBox = document.getElementById('speak-text');
+    const container = document.getElementById('speaking-list');
+    container.innerHTML = ''; // Xóa dữ liệu cũ
 
-    // 1. XỬ LÝ VĂN BẢN (Nếu có thì hiện, không thì ẩn)
-    if (data.content) {
-        textBox.style.display = 'block';
-        textBox.innerHTML = data.content; // Dùng innerHTML để hỗ trợ thẻ <b>, <br>
-    } else {
-        textBox.style.display = 'none';
-    }
+    // Duyệt qua từng câu hỏi trong mảng items
+    data.items.forEach((item, index) => {
+        // Kiểm tra xem có ảnh hay không
+        let hasImage = item.image && item.image !== "";
+        let htmlImage = hasImage ? `<img src="${path}/${item.image}" style="width:100%; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;">` : '';
+        
+        let htmlText = item.content ? `<div style="background: #fff; padding: 15px; border-left: 5px solid var(--primary); font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px;">${item.content}</div>` : '';
 
-    // 2. XỬ LÝ HÌNH ẢNH (Logic quan trọng)
-    if (data.image && data.image !== "") {
-        // TRƯỜNG HỢP CÓ ẢNH
-        layout.classList.remove('no-image'); // Xóa class đặc biệt
-        imgBox.style.display = 'block';      // Hiện khung ảnh
-        imgElement.src = `${path}/${data.image}`;
-    } else {
-        // TRƯỜNG HỢP KHÔNG CÓ ẢNH (Chỉ có văn bản)
-        layout.classList.add('no-image');    // Thêm class để CSS biết mà chỉnh layout
-        imgBox.style.display = 'none';       // Ẩn khung ảnh
-    }
+        // Dàn trang: Có ảnh thì chia 2 cột, không có thì 1 cột
+        let layoutStyle = hasImage ? 'display: grid; grid-template-columns: 1fr 1fr; gap: 20px;' : 'display: block;';
 
-    // 3. XỬ LÝ AUDIO MẪU
-    document.getElementById('speak-sample').src = `${path}/${data.audio}`;
-    
-    // 4. KÍCH HOẠT GHI ÂM
-    setupRecorder();
+        container.innerHTML += `
+            <div class="speaking-group" style="background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <h3 style="color:var(--primary); margin-bottom:15px;"># Task ${index + 1}</h3>
+                ${htmlText}
+                <div style="${layoutStyle}">
+                    ${hasImage ? `<div>${htmlImage}</div>` : ''}
+                    <div>
+                        <p><strong>Audio mẫu:</strong></p>
+                        <audio controls src="${path}/${item.audio}" style="width:100%; margin-bottom:15px;"></audio>
+                        <hr style="border: 0; border-top: 1px dashed #ccc; margin: 15px 0;">
+                        <p><strong>Ghi âm giọng bạn:</strong></p>
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <button id="btn-rec-${index}" class="btn-record" onclick="startRecording(${index})" style="padding:10px 15px; cursor:pointer;"><i class="fas fa-microphone"></i> Thu âm</button>
+                            <button id="btn-stop-${index}" class="btn-stop" onclick="stopRecording(${index})" style="padding:10px 15px; cursor:pointer;" disabled><i class="fas fa-stop"></i> Dừng</button>
+                        </div>
+                        <audio id="audio-user-${index}" controls style="width:100%;"></audio>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
 }
 
-// Hàm xử lý ghi âm
-function setupRecorder() {
-    const btnRecord = document.getElementById('btn-record');
-    const btnStop = document.getElementById('btn-stop');
-    const userAudio = document.getElementById('user-recording');
-    
-    let mediaRecorder;
-    let audioChunks = [];
+// Hàm BẮT ĐẦU ghi âm cho từng câu hỏi riêng biệt
+async function startRecording(index) {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorders[index] = new MediaRecorder(stream);
+        audioChunks[index] = [];
 
-    // Reset nút về trạng thái ban đầu
-    btnRecord.disabled = false;
-    btnStop.disabled = true;
-    
-    // Gỡ bỏ sự kiện cũ (tránh bị lặp khi chuyển bài) bằng cách clone nút
-    const newBtnRecord = btnRecord.cloneNode(true);
-    const newBtnStop = btnStop.cloneNode(true);
-    btnRecord.parentNode.replaceChild(newBtnRecord, btnRecord);
-    btnStop.parentNode.replaceChild(newBtnStop, btnStop);
+        mediaRecorders[index].ondataavailable = e => audioChunks[index].push(e.data);
+        mediaRecorders[index].onstop = () => {
+            const blob = new Blob(audioChunks[index], { type: 'audio/wav' });
+            document.getElementById(`audio-user-${index}`).src = URL.createObjectURL(blob);
+        };
 
-    // Gán sự kiện cho nút mới
-    newBtnRecord.onclick = async () => {
-        try {
-            // Yêu cầu quyền truy cập Micro
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = []; // Xóa dữ liệu cũ
+        mediaRecorders[index].start();
+        
+        // Đổi giao diện nút bấm
+        const btnRec = document.getElementById(`btn-rec-${index}`);
+        const btnStop = document.getElementById(`btn-stop-${index}`);
+        btnRec.disabled = true;
+        btnRec.innerHTML = '<i class="fas fa-circle" style="color:red"></i> Đang thu...';
+        btnStop.disabled = false;
+    } catch(e) { alert("Lỗi Micro: Hãy chạy trên Localhost hoặc HTTPS!"); }
+}
 
-            mediaRecorder.ondataavailable = (event) => {
-                audioChunks.push(event.data);
-            };
-
-            mediaRecorder.onstop = () => {
-                // Tạo file audio từ dữ liệu thu được
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                userAudio.src = audioUrl;
-            };
-
-            mediaRecorder.start();
-            
-            // Đổi trạng thái nút
-            newBtnRecord.disabled = true;
-            newBtnRecord.innerHTML = '<i class="fas fa-circle" style="color:red"></i> Đang thu...';
-            newBtnStop.disabled = false;
-            
-        } catch (err) {
-            console.error("Lỗi Micro:", err);
-            alert("Không thể mở Micro! \nLý do: Trình duyệt chặn hoặc chưa cấp quyền.\nHãy thử chạy trên GitHub Pages (HTTPS).");
-        }
-    };
-
-    newBtnStop.onclick = () => {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-            // Trả lại trạng thái nút
-            newBtnRecord.disabled = false;
-            newBtnRecord.innerHTML = '<i class="fas fa-microphone"></i> Thu âm lại';
-            newBtnStop.disabled = true;
-        }
-    };
+// Hàm DỪNG ghi âm
+function stopRecording(index) {
+    if(mediaRecorders[index] && mediaRecorders[index].state !== 'inactive') {
+        mediaRecorders[index].stop();
+        
+        const btnRec = document.getElementById(`btn-rec-${index}`);
+        const btnStop = document.getElementById(`btn-stop-${index}`);
+        btnRec.disabled = false;
+        btnRec.innerHTML = '<i class="fas fa-microphone"></i> Thu lại';
+        btnStop.disabled = true;
+    }
 }
 
 // --- GIỮ NGUYÊN CÁC PHẦN DƯỚI (Writing, Reading, window.onload...) ---
